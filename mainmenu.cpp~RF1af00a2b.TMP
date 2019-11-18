@@ -1,0 +1,162 @@
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
+
+void MainWindow::cookmenu()
+{
+    ui->menuBar->setNativeMenuBar(true);
+    devicelist = new QMenu("设备列表",this);
+        adddevice = new QAction("添加",devicelist);
+        connect(adddevice,&QAction::triggered,this,&MainWindow::slot_adddevice);
+        refreshlist = new QAction("刷新",devicelist);
+        connect(refreshlist,&QAction::triggered,this,&MainWindow::slot_refreshlist);
+        exitprogram = new QAction("exit",devicelist);
+        connect(exitprogram,&QAction::triggered,this,&MainWindow::slot_exitprogram);
+
+    devicelist->addAction(adddevice);
+    devicelist->addAction(refreshlist);
+    devicelist->addSeparator();
+    devicelist->addAction(exitprogram);
+
+    allsettings = new QMenu("通用设置",this);
+        generalsettings = new QAction("通用设置",allsettings);
+        connect(generalsettings,&QAction::triggered,this,&MainWindow::slot_generalsettings);
+        scensesettings = new QAction("广告设置",allsettings);
+        connect(scensesettings,&QAction::triggered,this,&MainWindow::slot_scensesettings);
+        securesettings = new QAction("安全设置",allsettings);
+        connect(securesettings,&QAction::triggered,this,&MainWindow::slot_securesettings);
+        savesettings = new QAction("保存设置",allsettings);
+        connect(savesettings,&QAction::triggered,this,&MainWindow::slot_savesettings);
+    allsettings->addAction(generalsettings);
+    allsettings->addAction(scensesettings);
+    allsettings->addAction(securesettings);
+    allsettings->addSeparator();
+    allsettings->addAction(savesettings);
+
+    adscense = new QMenu("广告控制",this);
+        addscense = new QAction("添加条目",allsettings);
+        connect(addscense,&QAction::triggered,this,&MainWindow::slot_addscense);
+        removescense = new QAction("删除条目",allsettings);
+        connect(removescense,&QAction::triggered,this,&MainWindow::slot_removescense);
+        uploadscense = new QAction("保存");
+        connect(uploadscense,&QAction::triggered,this,&MainWindow::slot_uploadscense);
+
+    adscense->addAction(addscense);
+    adscense->addAction(removescense);
+    adscense->addSection("save&upload");
+    adscense->addAction(uploadscense);
+
+    ui->menuBar->addMenu(devicelist);
+    ui->menuBar->addMenu(allsettings);
+    ui->menuBar->addMenu(adscense);
+}
+
+void MainWindow::slot_scensesettings(){
+    QSettings allscense(CONFIG_FILE_PATH,QSettings::Format::IniFormat);
+    unsigned int scensecount = 0;
+    allscense.beginGroup("AdScense")
+    while(allscense.contains(QString("scense%1").arg(scensecount++))){
+        QLabel* lll = new QLabel;
+        lll->setText(QString("场景%1").arg(scensecount));
+        QTextBrowser* ttt = new QTextBrowser;
+        ttt->setText(allscense.value(QString("scense%1").arg(scensecount)).toString());
+        ttt->setMaximumHeight(25);
+        QHBoxLayout *newscense = new QHBoxLayout;
+        newscense->addWidget(lll,1);
+        newscense->addWidget(ttt,4);
+        ui->layout_adscense->insertLayout(0,newscense);
+    }
+
+
+
+    ui->stackedWidget->setCurrentIndex(2);
+    allsettings->setTitle(scensesettings->text());
+}
+
+void MainWindow::slot_uploadscense(){
+    QSettings scensesettings(CONFIG_FILE_PATH,QSettings::Format::IniFormat);
+    int scensecount = 0;
+    QHBoxLayout *everyline;
+    while (scensecount < ui->layout_adscense->count()) {
+        everyline = (QHBoxLayout*) ui->layout_adscense->itemAt(scensecount);
+        QFile imgfile(((QTextBrowser*)everyline->itemAt(1)->widget())->document()->toRawText());
+        if(imgfile.open(QFile::OpenModeFlag::ReadOnly)){
+            scensesettings.setValue(((QLabel *)everyline->itemAt(0))->text().toLocal8Bit().data(),imgfile.fileName().toLocal8Bit().data());
+
+        }
+        else {
+            break;
+        }
+        scensecount++;
+    }
+    adscense = nullptr;
+
+}
+
+void MainWindow::slot_addscense()
+{
+    QFileInfo fff(QFileDialog::getOpenFileName(this, tr("选择图片"), "./", tr("Image Files (*.png *.jpg *.bmp)")));
+    if(fff.isReadable()){
+        QLabel* lll = new QLabel;
+        lll->setText(QString("场景%1").arg(ui->layout_adscense->count()));
+        QTextBrowser* ttt = new QTextBrowser;
+        ttt->setText(fff.fileName());
+        ttt->setMaximumHeight(25);
+        QHBoxLayout *newscense = new QHBoxLayout;
+        newscense->addWidget(lll,1);
+        newscense->addWidget(ttt,4);
+        ui->layout_adscense->insertLayout(0,newscense);
+        qDebug("\nFile[%s] will be transferring next ...",fff.absoluteFilePath().toLocal8Bit().data());
+//        ui->devicelist->upload_img_to_machine(fff.absoluteFilePath());
+    }
+    else
+    {
+        qDebug("\nCan't open %s for reading",fff.fileName().toLocal8Bit().data());
+    }
+
+}
+
+void MainWindow::slot_removescense()
+{
+    if(ui->layout_adscense->count()>0){
+        QHBoxLayout *newscense = (QHBoxLayout *)ui->layout_adscense->itemAt(0);
+        newscense->itemAt(1)->widget()->deleteLater();
+        newscense->itemAt(0)->widget()->deleteLater();
+        ui->layout_adscense->itemAt(0)->layout()->deleteLater();
+        newscense = nullptr;
+    }
+}
+
+void MainWindow::slot_adddevice()
+{
+    QFile cfgfile(CONFIG_FILE_PATH);
+}
+void MainWindow::slot_refreshlist()
+{
+    qDebug("i cc");
+    ui->devicelist->refreshlist(1949);
+    ui->stackedWidget->setCurrentIndex(0);
+}
+void MainWindow::slot_exitprogram()
+{
+    exit(0);
+}
+void MainWindow::slot_generalsettings()
+{
+    ui->stackedWidget->setCurrentIndex(1);
+    allsettings->setTitle(generalsettings->text());
+}
+void MainWindow::slot_securesettings()
+{
+
+}
+void MainWindow::slot_savesettings()
+{
+    if(ui->devicelist->transfer != nullptr){
+        qDebug("[WARNING]: last transfer operation still running");
+        return;
+    }
+    char filepath[] = CONFIG_FILE_PATH;
+    ui->devicelist->transfer = new TransferFile(ui->devicelist->currenthost,TransferFile::Method_putconfig,filepath);
+
+}
+
