@@ -3,15 +3,17 @@
 
 void MainWindow::cookmenu()
 {
-    devicelist = new QMenu("设备列表",this);
-        adddevice = new QAction("添加",devicelist);
+    devicelist = new QMenu(tr("设备"),this);
+        adddevice = new QAction(tr("添加设备"),devicelist);
         connect(adddevice,&QAction::triggered,this,&MainWindow::slot_adddevice);
-        refreshlist = new QAction("刷新",devicelist);
+        refreshlist = new QAction(tr("刷新列表"),devicelist);
         connect(refreshlist,&QAction::triggered,this,&MainWindow::slot_refreshlist);
-        uploadsettings = new QAction(tr("upload"),devicelist);
+        uploadsettings = new QAction(tr("上传设置"),devicelist);
         uploadsettings->setToolTip(tr("upload current settings to Rfid Machine"));
         connect(uploadsettings,&QAction::triggered,this,&MainWindow::slot_uploadsettings);
-        exitprogram = new QAction(tr("exit"),devicelist);
+        rebootdevice = new QAction(tr("reboot"),devicelist);
+        connect(rebootdevice,&QAction::triggered,this,&MainWindow::slot_rebootdevice);
+        exitprogram = new QAction(tr("quit"),devicelist);
         connect(exitprogram,&QAction::triggered,this,&MainWindow::slot_exitprogram);
 
 
@@ -19,17 +21,18 @@ void MainWindow::cookmenu()
     devicelist->addAction(refreshlist);
     devicelist->addSeparator();
     devicelist->addAction(uploadsettings);
+    devicelist->addAction(rebootdevice);
     devicelist->addSeparator();
     devicelist->addAction(exitprogram);
 
-    adscense = new QMenu("广告控制",this);
-        addscense = new QAction("添加条目",adscense);
+    adscense = new QMenu(tr("广告控制"),this);
+        addscense = new QAction(tr("添加条目"),adscense);
         connect(addscense,&QAction::triggered,this,&MainWindow::slot_addscense);
-        removescense = new QAction("remove all",adscense);
+        removescense = new QAction(tr("移除全部"),adscense);
         connect(removescense,&QAction::triggered,this,&MainWindow::slot_removescense);
-        uploadscense = new QAction("上传图片");
+        uploadscense = new QAction(tr("上传图片"));
         connect(uploadscense,&QAction::triggered,this,&MainWindow::slot_uploadscense);
-        downloadscense = new QAction("下载图片");
+        downloadscense = new QAction(tr("下载图片"));
         connect(downloadscense,&QAction::triggered,this,&MainWindow::slot_downloadscense);
 
     adscense->addAction(addscense);
@@ -118,10 +121,26 @@ void MainWindow::slot_uploadsettings()
     }
     st.endGroup();
 
+    st.beginGroup("BtnSettings");
+    st.setValue("startbtn",ui->lineEdit_startbtn->text());
+    st.setValue("aboutbtn",ui->lineEdit_aboutbtn->text());
+    st.setValue("quitbtn",ui->lineEdit_quitbtn->text());
+    st.setValue("helpbtn",ui->lineEdit_helpbtn->text());
+    st.setValue("confirmbtn",ui->lineEdit_confirmbtn->text());
+    st.endGroup();
+
+
+
     st.sync();
 
     ui->devicelist->UploadConfig();
 
+}
+
+void MainWindow::slot_rebootdevice(){
+    char rebootcmd[] = "reboot";
+
+    system(rebootcmd);
 }
 
 void MainWindow::slot_downloadscense(){

@@ -46,9 +46,10 @@ void MainWindow::slot_Load_config(){
 
 void MainWindow::slot_tab_changed(int index){
     switch (index) {
-    case 1:
+    case tab_adscense:
     {
         adscense->setEnabled(true);
+
     }
         break;
     default:
@@ -62,3 +63,8 @@ MainWindow::~MainWindow()
 }
 
 
+
+void MainWindow::on_adsettings_clicked()
+{
+    ui->tabWidget->setCurrentIndex(tab_adscense);
+}

@@ -81,12 +81,20 @@ void DeviceList::UploadConfig(){
 
 void DeviceList::slot_upload_config(int result){
     disconnect(ts[0],&TransferFile::transfer_finished,this,&DeviceList::slot_upload_config);
+    QMessageBox *qmb = new QMessageBox();
+    qmb->setButtonText(QMessageBox::StandardButton::Ok,"确认");
+
     if(ts[0]->GetMethod() == TransferFile::Method_putconfig){
         if(result == TransferFile::Result_finish){
-            qDebug("config file uploaded!,%d",ts[0]->GetResult());
+            qmb->setText(QString("已上传至%1 ").arg(currenthost.toString()));
+            qmb->setWindowTitle("配置上传成功");
         }else{
-            qDebug("transfer encounter error");
+            qDebug("transfer encounter error ");
+            qmb->setText(QString("上传错误 %d ").arg(ts[0]->GetResult()));
+            qmb->setWindowTitle("配置上传失败");
         }
     }
+    qmb->show();
+    qDebug("after messagebox");
     ts[0]->deleteLater();
 }

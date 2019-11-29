@@ -7,6 +7,7 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QLineEdit>
+#include <QMessageBox>
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include "transferfile.h"
