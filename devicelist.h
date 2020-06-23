@@ -7,9 +7,8 @@
 #include <QThread>
 #include <QtWidgets>
 #include <QtDebug>
-#include <QMessageBox>
 #include "transferfile.h"
-
+#include "tipsbox.h"
 #define SETTINGS_PATH "./Settings/"
 #define SETTINGS_FILE_OLD "old"
 

@@ -29,12 +29,14 @@ SOURCES += \
         mainmenu.cpp \
         mainwindow.cpp \
         scenselist.cpp \
+        tipsbox.cpp \
         transferfile.cpp
 
 HEADERS += \
         devicelist.h \
         mainwindow.h \
         scenselist.h \
+        tipsbox.h \
         transferfile.h
 
 FORMS += \

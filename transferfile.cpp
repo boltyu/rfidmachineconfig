@@ -150,6 +150,10 @@ void TransferFile::when_connection_hasnewdata(){
 
 void TransferFile::when_connection_error(QAbstractSocket::SocketError erno){
     qDebug("[WARNING]: connection encounter error: %d , and tcpsocket report: %s",erno,errorString().toLocal8Bit().data());
+    finished_flag = 1;
+    result = Result_netcrash;
+    emit transfer_finished(result);
+
 }
 
 

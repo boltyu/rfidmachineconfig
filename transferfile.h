@@ -7,7 +7,6 @@
 #include <QTcpSocket>
 #include <QFile>
 #include <QFileInfo>
-#include <QProgressDialog>
 
 
 class TransferFile : public QTcpSocket{

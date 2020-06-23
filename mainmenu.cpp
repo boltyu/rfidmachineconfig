@@ -76,6 +76,8 @@ void MainWindow::slot_removescense()
 void MainWindow::slot_adddevice()
 {
 //    QFile cfgfile(CONFIG_FILE_PATH);
+//    TipsBox *tb = new TipsBox(this);
+
 }
 void MainWindow::slot_refreshlist()
 {

@@ -73,28 +73,39 @@ void DeviceList::on_Reply_from_machine(){ // udp signal slot
 }
 
 void DeviceList::UploadConfig(){
-    QString filename = QString("%1%2%3").arg(SETTINGS_PATH).arg(currenthost.toString()).arg(".ini");
-    ts[0] = new TransferFile(currenthost,TransferFile::Method_putconfig,filename);
-    connect(ts[0],&TransferFile::transfer_finished,this,&DeviceList::slot_upload_config);
-    ts[0]->start();
+    try {
+        if(0){
+            QString tt(tr("配置文件仍在上传中..."));
+            TipsBox *tb = new TipsBox(TIPS_CONFIG,tt,this);
+            tb->show();
+        }
+        else{
+            QString filename = QString("%1%2%3").arg(SETTINGS_PATH).arg(currenthost.toString()).arg(".ini");
+            ts[0] = new TransferFile(currenthost,TransferFile::Method_putconfig,filename);
+            connect(ts[0],&TransferFile::transfer_finished,this,&DeviceList::slot_upload_config);
+            ts[0]->start();
+        }
+    } catch (QException::exception e) {
+        qDebug(e.what());
+    }
+
+
 }
 
 void DeviceList::slot_upload_config(int result){
     disconnect(ts[0],&TransferFile::transfer_finished,this,&DeviceList::slot_upload_config);
-    QMessageBox *qmb = new QMessageBox();
-    qmb->setButtonText(QMessageBox::StandardButton::Ok,"确认");
-
+    QString tt;
     if(ts[0]->GetMethod() == TransferFile::Method_putconfig){
         if(result == TransferFile::Result_finish){
-            qmb->setText(QString("已上传至%1 ").arg(currenthost.toString()));
-            qmb->setWindowTitle("配置上传成功");
+            tt = tr("已上传至%1").arg(currenthost.toString());
+
         }else{
             qDebug("transfer encounter error ");
-            qmb->setText(QString("上传错误 %d ").arg(ts[0]->GetResult()));
-            qmb->setWindowTitle("配置上传失败");
+            tt = tr("上传错误%1").arg(ts[0]->GetResult());
         }
     }
-    qmb->show();
-    qDebug("after messagebox");
+    TipsBox *tb = new TipsBox(TIPS_CONFIG,tt,this);
+    tb->show();
     ts[0]->deleteLater();
+    ts[0] = nullptr;
 }

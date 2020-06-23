@@ -4,12 +4,13 @@
 #include <QMainWindow>
 #include <QUdpSocket>
 #include <QFileDialog>
-#include <QMessageBox>
 #include <QDir>
+#include <QtDebug>
 
 #include "devicelist.h"
 #include "scenselist.h"
 #include "transferfile.h"
+#include "tipsbox.h"
 
 namespace Ui {
 class MainWindow;

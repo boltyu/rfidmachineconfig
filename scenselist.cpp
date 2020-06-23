@@ -98,26 +98,9 @@ void ScenseList::slot_sync_scense(int result){
         connect(ts[transfercount],&TransferFile::transfer_finished,this,&ScenseList::slot_sync_scense);
         ts[transfercount]->start();
     }else{
-        QMessageBox *qmb = new QMessageBox();
-        qmb->setButtonText(QMessageBox::StandardButton::Ok,"确认");
-        qmb->setWindowTitle("图片同步完成");
-
-        QString aa;
-        aa = tr("red: failed\ngreen: success");
-        qmb->setWindowFlags(Qt::WindowType::SubWindow);
-
-        QHBoxLayout *hlayout = new QHBoxLayout; /*qmb->layout();*/
-//        hlayout->SetMaximumSize;
-        QWidget *a = new QWidget;
-        QWidget *b = new QWidget;
-        a->setStyleSheet("background:green");
-        b->setStyleSheet("background:red");
-        hlayout->addWidget(a,1);
-        hlayout->addWidget(b,1);
-        qmb->setLayout(hlayout);
-        qmb->setText(aa);
-
-        qmb->show();
+        QString tt(tr("图片同步成功"));
+        TipsBox *tb = new TipsBox(TIPS_SCENSE,tt,this);
+        tb->show();
     }
 
 
